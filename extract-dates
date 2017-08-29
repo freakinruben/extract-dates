@@ -1,6 +1,6 @@
-#!/usr/bin/env  rvm 1.9 do ruby
+#!/usr/bin/env  ruby
 
-def parse_year(y) 
+def parse_year(y)
     if y !~ /^(19|20)[0-9][0-9]$/
         y.sub!(/^['`]/, "")
         if y.to_i < 69
@@ -36,6 +36,9 @@ end
 
 def printout(a)
     puts "#{a[:year]}-#{a[:month]}-#{a[:day]}: #{a[:date_str]}: #{a[:fmt]}: #{a[:line]}"
+end
+def print_touchdate(a)
+    puts "#{a[:year]}#{a[:month]}#{a[:day]}0000"
 end
 
 $hy = ',?[- .\\/]'
@@ -99,6 +102,8 @@ $datefmt = {
     dd_mm_yyyy:  Regexp.new('\b' + $d   + $hd + $m   + $hy + $y   + '\b', true),
     dd_mmm_yyyy: Regexp.new('\b' + $d   + $hy + $mmm + $hy + $y   + '\b', true),
 
+    ddmmmyyyy:   Regexp.new('\b' + $d   + $hy + '?' + $mmm + $hy + '?' + $y  + '\b', true),
+
     mm_dd_yyyy:  Regexp.new('\b' + $m   + $hd + $d   + $hy + $y   + '\b', true),
     mmm_dd_yyyy: Regexp.new('\b' + $mmm + $hy + $d   + $hy + $y   + '\b', true),
 
@@ -118,6 +123,7 @@ $datefmt = {
 while line = gets() do
     match_cnt = 0
     $datefmt.each do |fmt, re|
+        line.force_encoding("ISO-8859-1")
         if ( re =~ line )
             match = Regexp.last_match
             a = Hash.new
@@ -137,6 +143,9 @@ while line = gets() do
             a[:day] = parse_day(a[:day])
             a[:match_cnt] = match_cnt
             printout(a)
+            break
+            #print_touchdate(a)
+            #exit
         end
     end
 end
